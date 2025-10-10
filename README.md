@@ -12,8 +12,8 @@
 **项目目标：**  
 打造一个低成本、可本地运行的医疗语音辅助系统，  
 实现以下核心功能：
-- 医生问诊语音识别（Whisper）
-- AI 自动生成结构化摘要（本地 LLM）
+- 医生问诊语音识别（FunASR）
+- AI 自动生成结构化摘要（Qwen2）
 - 医生确认与编辑（Human-in-the-loop）
 - 一键导出病历报告（PDF）
 - 医学知识检索问答（LangChain + Chroma）
@@ -46,26 +46,31 @@ ai-medical-assistant/
 │
 ├── backend/
 │ ├── api/
-│ │ ├── audio.py # 语音识别接口
-│ │ ├── summary.py # 摘要生成接口
-│ │ ├── confirm.py # 医生确认接口
-│ │ ├── chat.py # 医学问答接口（RAG）
-│ │ ├── patient.py # 病人数据管理
-│ │ └── report.py # 报告导出接口
+│ │ ├── audio.py            # 语音识别接口
+│ │ ├── summary.py          # 摘要生成接口
+│ │ ├── confirm.py          # 医生确认接口
+│ │ ├── chat.py             # 医学问答接口（RAG）
+│ │ ├── patient.py          # 病人数据管理
+│ │ └── report.py           # 报告导出接口
 │ ├── utils/
-│ │ ├── whisper_utils.py # Whisper 转写
-│ │ ├── summarizer.py # LLM 摘要逻辑
-│ │ ├── pdf_tools.py # PDF 报告生成
-│ │ └── security.py # 数据安全与脱敏
+│ │ ├── whisper_utils.py    # Whisper 转写
+│ │ ├── summarizer.py       # LLM 摘要逻辑
+│ │ ├── pdf_tools.py        # PDF 报告生成
+│ │ └── security.py         # 数据安全与脱敏
 │ ├── database/
-│ │ ├── db.py
+│ │ ├── __init__.py         # (空檔案)
+│ │ ├── crud.py             # (空檔案) - 未來放資料庫增刪改查邏輯
+│ │ ├── init_db.py          # (空檔案) - 未來放初始化資料庫的腳本
+│ │ ├── models.py           # (空檔案) - 未來放 SQLAlchemy 的 ORM 模型
 │ │ └── schemas.py
 │ ├── rag/
 │ │ ├── knowledge_base/
 │ │ ├── build_index.py
 │ │ └── retriever.py
 │ ├── main.py
-│ └── requirements.txt
+│ ├── .env                  # (空檔案) - 未來放設定和密碼
+│ ├── requirements.txt
+│ └── venv/
 │
 ├── frontend/
 │ ├── src/
