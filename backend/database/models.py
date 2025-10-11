@@ -20,9 +20,9 @@ class Patient(Base):
     # 联系方式
     contact_info = Column(String(200))
     # 创建时间
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at = Column(DateTime, nullable=False, default=datetime.now)
     # 更新时间
-    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     
     # 关联的病例信息
     cases = relationship("ConfirmedCase", back_populates="patient")
@@ -45,9 +45,25 @@ class ConfirmedCase(Base):
     # 医生备注
     doctor_notes = Column(Text)
     # 创建时间
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at = Column(DateTime, nullable=False, default=datetime.now)
     # 更新时间
-    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     
     # 关联的患者信息
     patient = relationship("Patient", back_populates="cases")
+    
+
+class MedicalKnowledge(Base):
+    """医学知识库表"""
+    __tablename__ = 'medical_knowledge'
+    
+    # 知识条目ID，主键，自增
+    doc_id = Column(Integer, primary_key=True, index=True)
+    # 知识标题
+    title = Column(String(255), nullable=False, unique=True)
+    # 知识内容（文本）
+    content_text = Column(Text, nullable=False)
+    # 来源URL
+    source_url = Column(String(255))
+    # 创建时间
+    created_at = Column(DateTime, nullable=False, default=datetime.now)
