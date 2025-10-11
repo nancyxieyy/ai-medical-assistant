@@ -2,8 +2,11 @@
 
 from sqlalchemy import Column, Integer, String, Date, DateTime, Text, JSON, ForeignKey
 from .base import Base
+from .session import engine
 from sqlalchemy.orm import relationship
 from datetime import datetime
+
+Base.metadata.create_all(bind=engine)
 
 class Patient(Base):
     """患者基本信息表"""
@@ -60,10 +63,12 @@ class MedicalKnowledge(Base):
     # 知识条目ID，主键，自增
     doc_id = Column(Integer, primary_key=True, index=True)
     # 知识标题
-    title = Column(String(255), nullable=False, unique=True)
+    title = Column(String(255), nullable=False, unique=False)
     # 知识内容（文本）
     content_text = Column(Text, nullable=False)
     # 来源URL
     source_url = Column(String(255))
     # 创建时间
     created_at = Column(DateTime, nullable=False, default=datetime.now)
+    # 来源
+    source_type = Column(String(20))

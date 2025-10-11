@@ -28,12 +28,12 @@
 
 | 模块 | 使用技术 |
 |------|------------|
-| 后端 | FastAPI + Python 3.10 |
+| 后端 | FastAPI + Python 3.11.5 |
 | 前端 | Vue3 + TailwindCSS |
-| 语音识别 | Whisper / FasterWhisper |
+| 语音识别 | FunASR |
 | 摘要生成 | Ollama + Mistral / Llama3 / Qwen2 |
 | 检索问答 | LangChain + ChromaDB |
-| 数据存储 | SQLite + SQLAlchemy |
+| 数据存储 | SQLite + postgreSQL + redis + ChromaDB |
 | 报告导出 | ReportLab / pdfkit |
 | 部署 | Docker + Render / Vercel |
 
