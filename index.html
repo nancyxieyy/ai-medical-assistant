@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>医患对话界面</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <main class="app-main" aria-describedby="layout-hint">
+        <p id="layout-hint" class="visually-hidden">左侧展示对话内容，右侧展示历史病历与输入框。</p>
+        <section class="chat-pane" id="chat-pane" aria-label="对话记录">
+          <div class="chat-scroll" id="chat-scroll">
+            <article class="message patient">
+              <p>这是来自病人的示例内容。实际数据加载后将自动替换。</p>
+            </article>
+            <article class="message doctor">
+              <p>
+                这里显示医生的回复文本，用于占位。真实场景下可以动态渲染。
+              </p>
+            </article>
+            <article class="message patient">
+              <p>病人继续描述症状的场景占位内容。</p>
+            </article>
+            <article class="message doctor">
+              <p>医生补充提问或建议的占位文本。</p>
+            </article>
+            <article class="message patient">
+              <p>
+                占位信息：病人提供更多细节。向上滚动可以查看更早的消息。
+              </p>
+            </article>
+            <article class="message doctor">
+              <p>
+                占位信息：医生做进一步诊断说明。向下可以查看最新消息。
+              </p>
+            </article>
+          </div>
+          <button
+            type="button"
+            class="chat-collapse-toggle"
+            id="chat-collapse-toggle"
+            aria-expanded="true"
+            aria-controls="chat-pane"
+          >
+            &lt;&lt;
+          </button>
+          <h2 class="chat-pane-title">实时对话</h2>
+        </section>
+
+        <section class="agent-pane" aria-label="对话输出">
+          <div class="agent-content">
+            <div class="conversation-thread" id="conversation-thread" aria-live="polite">
+              <article class="thread-message thread-message--incoming">
+                <p>病人说：“我咳嗽快一周了，晚上躺下来咳得更厉害，偶尔能咳出点黄痰，咳不出来的时候胸口发闷，稍微动一动这种闷的感觉还会更明显”，医生初步判断可能是支气管炎，也不排除咽喉有炎症？”</p>
+              </article>
+              <article class="thread-message thread-message--incoming">
+                <p>病人接着说：“喉咙干痒好几天了，说话多了就咳得更凶，喝口水也就缓解一小会儿，总觉得喉咙里卡着点东西，忍不住想清嗓子”，医生补充考虑可能是气道敏感，或者有点鼻后滴漏的情况？”</p>
+              </article>
+              <article class="thread-message thread-message--incoming">
+                <p>医生给出建议：“先去做个血常规和胸片看看情况，我给你开点化痰的药，喉咙痒的话可以含点润喉片。最近别熬夜，少说话让嗓子歇一歇，别吃辣的、甜的，多喝点温水”。</p>
+              </article>
+              <article class="thread-message thread-message--incoming">
+                <p>医生又问病人：“之前咳嗽前有没有感冒？平时有没有鼻炎或者哮喘？最近有没有接触油烟、粉尘这些刺激的东西？有没有吸烟习惯？家里人最近有没有咳嗽的？”</p>
+              </article>
+            </div>
+          </div>
+          <div class="composer">
+            <form class="composer-form" id="composer-form">
+              <label class="visually-hidden" for="composer-input">输入对话</label>
+              <textarea
+                id="composer-input"
+                name="message"
+                rows="1"
+                placeholder="请输入..."
+                required
+              ></textarea>
+              <div class="composer-actions">
+                <button type="submit" class="btn primary send-btn">
+                  <img src="Send Icon.png" alt="发送" class="send-icon" />
+                </button>
+              </div>
+            </form>
+          </div>
+          <h2 class="agent-pane-title">辅助面板</h2>
+          <button type="button" class="summary-toggle" id="summary-toggle">总结</button>
+        </section>
+
+        <section class="history-pane" id="history-pane" aria-label="患者信息与病历">
+          <div class="history-scroll" id="history-scroll">
+            <div class="patient-info">
+              <div class="patient-info-item">
+                <span class="patient-info-label">姓名</span>
+                <span class="patient-info-value">张三</span>
+              </div>
+              <div class="patient-info-item">
+                <span class="patient-info-label">年龄</span>
+                <span class="patient-info-value">45岁</span>
+              </div>
+              <div class="patient-info-item">
+                <span class="patient-info-label">性别</span>
+                <span class="patient-info-value">男</span>
+              </div>
+              <div class="patient-info-item">
+                <span class="patient-info-label">医保</span>
+                <span class="patient-info-value">职工医保</span>
+              </div>
+              <div class="patient-info-item">
+                <span class="patient-info-label">病历号</span>
+                <span class="patient-info-value">202410001234</span>
+              </div>
+              <div class="patient-info-item">
+                <span class="patient-info-label">重大疾病史</span>
+                <span class="patient-info-value">高血压</span>
+              </div>
+            </div>
+            
+            <div class="medical-records">
+              <div class="record-item" data-record-id="1">
+                <div class="record-header">
+                  <div>
+                    <span class="record-date">2024-09-15</span>
+                    <span class="record-diagnosis">高血压复查</span>
+                  </div>
+                  <span class="record-arrow">▶</span>
+                </div>
+                <div class="record-details">
+                  <p><strong>主诉：</strong></p>
+                  <ul>
+                    <li>反复头晕、清晨头痛伴偶发胸闷2周，加重1周。</li>
+                    <li>居家自测血压多在 150–165/95–102 mmHg 波动，夜间偶有心悸。</li>
+                    <li>近3个月运动减少，饮食偏咸，偶尔漏服降压药。</li>
+                  </ul>
+                  <p><strong>体格/检查要点：</strong></p>
+                  <ul>
+                    <li>BP 158/98 mmHg，HR 86 次/分，BMI 28.1 kg/m²。</li>
+                    <li>心肺查体阴性，下肢不凹性水肿(-)。</li>
+                    <li>实验室：Scr 88 μmol/L，eGFR > 90；尿常规：微量蛋白(+/-)；总胆固醇 6.2 mmol/L，LDL-C 3.8 mmol/L。</li>
+                  </ul>
+                  <p><strong>诊断：</strong></p>
+                  <ul>
+                    <li>原发性高血压（2级，极高危）</li>
+                    <li>肥胖/超重</li>
+                    <li>高脂血症（以 LDL 升高为主）</li>
+                  </ul>
+                  <p><strong>处方：</strong></p>
+                  <ul>
+                    <li>缬沙坦胶囊 80 mg 早饭后 1 次/日。</li>
+                    <li>氨氯地平片 5 mg 晚 1 次/日；若踝部水肿明显，电话随访调整。</li>
+                    <li>瑞舒伐他汀 10 mg 睡前 1 次/日（若无他汀不耐受史）。</li>
+                    <li>家庭血压计，晨起及睡前各测量 1 次，连续记录 14 天。</li>
+                  </ul>
+                  <p><strong>医嘱：</strong></p>
+                  <ul>
+                    <li>低盐饮食（食盐 < 5g/日），控制体重，每周≥150 分钟中等强度运动。</li>
+                    <li>规律服药，不得自行停药；出现头晕乏力、踝肿等及时就诊。</li>
+                    <li>若收缩压≥180 或舒张压≥110 mmHg 且伴剧烈头痛/胸痛，立即前往急诊。</li>
+                    <li>2 周后复诊，携带血压记录本评估疗效与不良反应。</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="record-item" data-record-id="2">
+                <div class="record-header">
+                  <div>
+                    <span class="record-date">2024-08-10</span>
+                    <span class="record-diagnosis">急性上呼吸道感染</span>
+                  </div>
+                  <span class="record-arrow">▶</span>
+                </div>
+                <div class="record-details">
+                  <p><strong>主诉：</strong></p>
+                  <ul>
+                    <li>咽痛、流涕伴干咳 2 天，最高体温 37.8℃，乏力轻。</li>
+                    <li>自测新冠抗原阴性，周围同事近期有感冒史。</li>
+                  </ul>
+                  <p><strong>查体：</strong></p>
+                  <ul>
+                    <li>咽后壁充血，扁桃体 I° 肿大，鼻黏膜水肿，双肺呼吸音清。</li>
+                  </ul>
+                  <p><strong>诊断：</strong></p>
+                  <ul>
+                    <li>急性上呼吸道感染（多为病毒性）</li>
+                    <li>伴变应性鼻炎可能</li>
+                  </ul>
+                  <p><strong>处方（对症为主）：</strong></p>
+                  <ul>
+                    <li>对乙酰氨基酚片 500 mg 发热或头痛时顿服，可6–8小时重复一次（不超过 3 g/日）。</li>
+                    <li>右美沙芬口服液 10 ml 每日 3 次，干咳明显时使用。</li>
+                    <li>洛拉塔丁 10 mg 每晚 1 次，连用 5–7 天。</li>
+                    <li>等渗盐水鼻喷 2–3 次/日，含服润喉片缓解咽痛。</li>
+                  </ul>
+                  <p><strong>医嘱：</strong></p>
+                  <ul>
+                    <li>多饮水、充分休息，避免辛辣油腻与烟酒。</li>
+                    <li>体温≥38.5℃或症状加重持续>48 小时，或出现喘憋/胸痛/咯血，及时复诊。</li>
+                    <li>无需常规抗生素，除非出现细菌感染证据。</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="record-item" data-record-id="3">
+                <div class="record-header">
+                  <div>
+                    <span class="record-date">2024-07-05</span>
+                    <span class="record-diagnosis">年度健康体检</span>
+                  </div>
+                  <span class="record-arrow">▶</span>
+                </div>
+                <div class="record-details">
+                  <p><strong>主诉：</strong>无明显不适，年度单位常规体检。</p>
+                  <p><strong>体检/检查摘要：</strong></p>
+                  <ul>
+                    <li>血压 150/95 mmHg；BMI 27.4 kg/m²；腰围 96 cm。</li>
+                    <li>空腹血糖 6.1 mmol/L；血脂：TC 6.0、LDL-C 3.6、HDL-C 1.0 mmol/L。</li>
+                    <li>腹部超声：轻度脂肪肝；心电图：窦性心律，未见明显异常。</li>
+                  </ul>
+                  <p><strong>评估：</strong></p>
+                  <ul>
+                    <li>超重，血压升高，合并血脂异常与 NAFLD 风险。</li>
+                  </ul>
+                  <p><strong>建议与随访：</strong></p>
+                  <ul>
+                    <li>控制饮食总热量与精制碳水，增加蔬果与优质蛋白；每周≥150 分钟有氧+2次抗阻训练。</li>
+                    <li>3 个月后复查血压、血脂与肝功能；如家族早发心血管病史，建议心血管风险评估。</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="history-collapse-toggle"
+            id="history-collapse-toggle"
+            aria-expanded="true"
+            aria-controls="history-pane"
+          >
+            &gt;&gt;
+          </button>
+          <h2 class="history-pane-title">患者信息</h2>
+        </section>
+      </main>
+    </div>
+
+    <div class="summary-modal" id="summary-modal">
+      <div class="summary-content">
+        <h3>问诊总结</h3>
+        <textarea class="summary-editor" id="summary-editor" rows="15">【初步诊断示例】
+患者主诉：咳嗽一周，夜间加重，伴黄痰、胸闷
+初步判断：支气管炎可能，不排除咽喉炎症
+建议检查：血常规、胸片
+处方：化痰药物、润喉片
+医嘱：避免熬夜、清淡饮食、多饮温水
+        </textarea>
+        <button type="button" class="btn primary summary-save" id="summary-save">保存</button>
+      </div>
+    </div>
+
+    <div class="confirm-modal" id="confirm-modal">
+      <div class="confirm-content">
+        <p>保存完成</p>
+        <div class="confirm-actions">
+          <button type="button" class="btn primary" id="confirm-ok">确定</button>
+          <button type="button" class="btn" id="confirm-edit">重新修改</button>
+        </div>
+      </div>
+    </div>
+    <script src="./script.js"></script>
+  </body>
+</html>
