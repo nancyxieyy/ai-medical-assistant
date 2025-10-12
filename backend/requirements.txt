@@ -28,6 +28,7 @@ distro==1.9.0
 dnspython==2.8.0
 durationpy==0.10
 editdistance==0.8.1
+einops==0.8.1
 email-validator==2.3.0
 fastapi==0.118.2
 fastapi-cli==0.0.13
@@ -80,7 +81,7 @@ multidict==6.7.0
 multiprocess==0.70.16
 networkx==3.5
 numba==0.62.1
-numpy==2.3.3
+numpy==1.26.4
 oauthlib==3.3.1
 omegaconf==2.3.0
 onnxruntime==1.23.1

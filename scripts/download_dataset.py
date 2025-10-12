@@ -2,6 +2,9 @@
 
 from datasets import load_dataset
 import os
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
 
 # 下载数据集
 huatuo_encyclopedia = load_dataset("FreedomIntelligence/huatuo_encyclopedia_qa")

@@ -2,6 +2,9 @@
 
 import sys
 import os
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
 
 # 将项目根目录添加到 sys.path 中
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
