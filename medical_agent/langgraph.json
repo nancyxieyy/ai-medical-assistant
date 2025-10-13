@@ -1,23 +1,21 @@
 {
   "$schema": "https://langgra.ph/schema.json",
   "dependencies": ["."],
-  "node_graphs": {
+  "graphs": {
     "medical_rag_graph": {
       "id": "medical_rag_graph",
       "nodes": [
         "asr_node",
         "jina_embedding_node",
         "rag_query_node",
-        "llm_summary_node"
+        "llm_doctor_node"
       ],
       "edges": [
         ["asr_node", "jina_embedding_node"],
         ["jina_embedding_node", "rag_query_node"],
-        ["rag_query_node", "llm_summary_node"]
+        ["rag_query_node", "llm_doctor_node"]
       ]
-    }
-  },
-  "graphs": {
+    },
     "agent": "./src/agent/graph.py:graph"
   },
   "env": ".env",
@@ -38,6 +36,14 @@
       "class_name": "RAGQueryNode",
       "inputs": ["embeddings"],
       "outputs": ["context"]
+    },
+    {
+      "id": "llm_doctor_node",
+      "type": "python",
+      "path": "../backend/nodes/llm_doctor_node.py",
+      "class_name": "LLMDoctorAdviceNode",
+      "inputs": ["mode", "transcript", "context"],
+      "outputs": ["llm_output"]
     }
   ]
 }
