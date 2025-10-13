@@ -48,21 +48,6 @@ def clean_data(dataset, src):
         }) 
     return mapped_data
 
-
-# KNOWLEDGE_DATA = [
-#     {
-#         "title": "关于普通感冒的症状",
-#         "content_text": "普通感冒是一种上呼吸道病毒感染。常见症状包括流鼻涕、鼻塞、喉咙痛、咳嗽、打喷嚏和轻微的身体疼痛或头痛。发烧通常不常见或仅为低热。症状通常在接触病毒后一到三天出现。",
-#         "source_url": "https://example.com/common-cold"
-#     },
-#     {
-#         "title": "高血压的定义与标准",
-#         "content_text": "高血压，即动脉血压持续升高。通常定义为收缩压持续等于或高于140毫米汞柱（mmHg），或舒张压持续等于或高于90毫米汞柱。长期高血压是心脏病、中风和肾脏疾病等多种严重健康问题的主要风险因素。",
-#         "source_url": "https://example.com/hypertension"
-#     }
-# ]
-
-
 def main():
     # 加载数据集
     ds_ency = load_from_disk("data/huatuo/huatuo_encyclopedia")

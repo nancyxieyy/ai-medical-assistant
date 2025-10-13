@@ -30,6 +30,14 @@
       "class_name": "JinaEmbeddingNode",
       "inputs": ["texts"],
       "outputs": ["embeddings"]
+    },
+    {
+      "id": "rag_query_node",
+      "type": "python",
+      "path": "../backend/nodes/rag_query_node.py",
+      "class_name": "RAGQueryNode",
+      "inputs": ["embeddings"],
+      "outputs": ["context"]
     }
   ]
 }

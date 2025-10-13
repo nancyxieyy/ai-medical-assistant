@@ -36,5 +36,5 @@ if __name__ == "__main__":
     node = JinaEmbeddingNode()
     sample = {"texts": ["发烧两天，咳嗽，是否需要使用抗生素？"]}
     result = node.run(sample)
-    print(f"生成向量维度：{len(result['embeddings'][0])}")
-    print(f"前10个数值示例：{result['embeddings'][0][:10]}")
+    print(f"生成向量维度:{len(result['embeddings'][0])}")
+    print(f"前10个数值示例:{result['embeddings'][0][:10]}")

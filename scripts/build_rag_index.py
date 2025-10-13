@@ -23,11 +23,10 @@ def load_knowledge_from_db():
     """从数据库加载医学知识数据"""
     db = SessionLocal()
     try:
-        offset = random.randint(0, 5000)
-        records = db.query(MedicalKnowledge).offset(offset).limit(300).all()
+        records = db.query(MedicalKnowledge).limit(4000).all()
         data = []
         if not records:
-            print("数据库返回空集，请检查 offset 或数据量")
+            print("数据库返回空集，请检查数据库是否为空")
             return []
         else:
             for record in records:
@@ -60,17 +59,18 @@ def chunk_text(text, chunk_size=500, overlap=80):
     if current:
         chunks.append(current.strip())
     # 丢掉太短的块
-    return [(i, c) for i, c in enumerate(chunks) if len(c) > 50]
+    return [(i, c) for i, c in enumerate(chunks) if len(c) > 10]
 
 from backend.nodes.embedding_node import JinaEmbeddingNode
 import chromadb
 from tqdm import tqdm
-import time
+import gc
 
 import hashlib
-def make_id(title, i):
-    h = hashlib.md5(title.encode("utf-8")).hexdigest()[:8]
-    return f"{h}-{i}"
+def make_id(title, i, source_type):
+    """为每个chunk生成唯一id"""
+    h = hashlib.md5(f"{title}_{source_type}".encode("utf-8")).hexdigest()[:8]
+    return f"{source_type}-{h}-{i}"
 
 
 if __name__ == "__main__": 
@@ -80,29 +80,38 @@ if __name__ == "__main__":
     client = chromadb.PersistentClient(path=chroma_dir)
     collection = client.get_or_create_collection("medical_knowledge")
 
-    # 载入数据
+    # 加载数据
     data = load_knowledge_from_db()
     if not data:
         print("数据库返回空集，请检查数据或 offset")
         sys.exit(0)
-    print(f"已加载 {len(data)} 条医学知识，写入目录：{chroma_dir}")
+    print(f"已載入 {len(data)} 条医学知识，写入目录：{chroma_dir}")
 
     # 逐条构建向量
     batch_size = 100
     buffer = []
-    for row in tqdm(data):
+    for row in tqdm(data, desc="Processing documents"):
         chunks = chunk_text(row["content_text"])
+        if not chunks:
+            continue
+
         texts = [c for _, c in chunks]
-            
-        # 调用 Embedding Node
+
         embeddings = []
-        for i in range(0, len(texts), 4):     # 小批嵌入
-            res = embedder.run({"texts": texts[i:i+4]})
-            embeddings.extend(res["embeddings"])
+        for text_chunk in texts:
+            res = embedder.run({"texts": [text_chunk]})
+            # 检查返回结果是否有效
+            if res and res.get("embeddings") and res["embeddings"]:
+                embeddings.extend(res["embeddings"])
+            else:
+                embeddings.append(None) # 添加一個佔位符，保持长度一致
 
         for i, (chunk, emb) in enumerate(zip(texts, embeddings)):
+            # 跳过嵌入失敗或为空的块
+            if not emb or len(emb) < 100:
+                continue
             buffer.append({
-                "id": make_id(row["title"], i),
+                "id": make_id(row["title"], i, row["source_type"]),
                 "doc": chunk,
                 "emb": emb,
                 "meta": {
@@ -112,7 +121,8 @@ if __name__ == "__main__":
                     "chunk_index": i
                 }
             })
-            
+
+        # 写入 ChromaDB
         if len(buffer) >= batch_size:
             collection.add(
                 ids=[b["id"] for b in buffer],
@@ -120,9 +130,13 @@ if __name__ == "__main__":
                 embeddings=[b["emb"] for b in buffer],
                 metadatas=[b["meta"] for b in buffer]
             )
+            print(f"\n写入 {len(buffer)} 条 chunk（当前总计: {collection.count()}）")
             buffer.clear()
-            time.sleep(0.5)  # 每 100 条暂停半秒
-    
+
+        # 在处理完一篇大文章的所有 chunks 后，呼叫垃圾回收
+        gc.collect()
+
+    # 处理剩余的 buffer
     if buffer:
         collection.add(
             ids=[b["id"] for b in buffer],
@@ -130,9 +144,13 @@ if __name__ == "__main__":
             embeddings=[b["emb"] for b in buffer],
             metadatas=[b["meta"] for b in buffer],
         )
+        print(f"\n最后一批写入 {len(buffer)} 条 chunk（总计: {collection.count()}）")
 
+    # 测试查询
     query = "发烧两天 咳嗽 是否需要用抗生素"
     q_vec = embedder.run({"texts": [query]})["embeddings"]
     res = collection.query(query_embeddings=q_vec, n_results=3)
     for m, d in zip(res["metadatas"][0], res["documents"][0]):
         print(f"[{m['source_type']}] {m['title']} → {d[:80]}...")
+
+    print("当前向量条数：", collection.count())
