@@ -38,17 +38,6 @@ class LLMDoctorAdviceNode:
             torch_dtype=dtype,
             trust_remote_code=True # 載入模型時也需要
         ).to(device)
-        
-        # self.pipe = pipeline(
-        #     "text-generation",
-        #     model=self.model,
-        #     tokenizer=self.tokenizer,
-        #     device=device,
-        #     max_new_tokens=512,
-        #     temperature=0.3,    # 降低 temperature 让出更稳定
-        #     repetition_penalty=1.2,
-        #     eos_token_id=self.tokenizer.eos_token_id
-        # )
 
         print("Qwen3 模型加载完成")
     

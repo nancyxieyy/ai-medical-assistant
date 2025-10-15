@@ -2,7 +2,7 @@
 
 from sqlalchemy import create_engine
 from .base import Base
-from .models import Patient, ConfirmedCase  # 确保模型已导入
+from .models import Patient, ConfirmedCase, MedicalKnowledge, Report  # 确保模型已导入
 
 # 使用 SQLite 数据库
 DATABASE_URL = "sqlite:///./ai_medical_assistant.db"

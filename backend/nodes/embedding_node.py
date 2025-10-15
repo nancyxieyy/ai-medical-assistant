@@ -1,27 +1,26 @@
 # backend/nodes/embedding_node.py
 
 import os
-os.environ["HUGGINGFACE_HUB_CACHE"] = ".cache/hf"
-
 from sentence_transformers import SentenceTransformer
-
-# 初始化模型
-# model = SentenceTransformer("jinaai/jina-embeddings-v3", trust_remote_code=True)
-
-# texts = ["发烧两天咳嗽是否需要用抗生素"]
-
-# embeddings = model.encode(texts, normalize_embeddings=True)
-
-# print(f"向量维度：{len(embeddings[0])}")
-# print(f"前10个数值示例：{embeddings[0][:10]}")
-
 
 class JinaEmbeddingNode:
     """Embedding Node框架"""
     
     def __init__(self, model_name="jinaai/jina-embeddings-v3"):
         """初始化模型"""
-        self.model = SentenceTransformer(model_name, trust_remote_code=True)
+        # self.model = SentenceTransformer(model_name, trust_remote_code=True)
+        cache_dir = os.getenv("HUGGINGFACE_HUB_CACHE", os.path.expanduser("~/.cache/huggingface"))
+        os.makedirs(cache_dir, exist_ok=True)
+
+        print(f"正在加载嵌入模型：{model_name}")
+        print(f"模型缓存目录：{cache_dir}")
+
+        self.model = SentenceTransformer(
+            model_name,
+            cache_folder=cache_dir,
+            trust_remote_code=True
+        )
+        print("JinaEmbeddingNode 模型加载完成。")
     
     def run(self, state):
         """
