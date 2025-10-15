@@ -84,12 +84,15 @@ def create_recognizer():
         num_threads=100,
         sample_rate=16000,
         feature_dim=80,
-        provider="cuda",
+        provider="cpu",
         enable_endpoint_detection=True,
         rule1_min_trailing_silence=2.4,
         rule2_min_trailing_silence=1.2,
         rule3_min_utterance_length=300,
-        debug=1,# 基本等于关闭该规则
+        debug=1,
+        hr_dict_dir="./dict",
+        #hr_lexicon="./lexicon.txt",
+        hr_rule_fsts="./replace.fst",
     )
     return recognizer
 
@@ -119,7 +122,8 @@ def main():
     stream = recognizer.create_stream()
 
     # 打开输入流，循环读取音频 -> 解码 -> 端点判断
-    with sd.InputStream(channels=1, dtype="float32", samplerate=sample_rate) as s:
+    #with sd.InputStream(channels=1, dtype="float32", samplerate=sample_rate) as s:
+    with sd.InputStream(channels=1, samplerate=sample_rate) as s:
         while True:
             samples, _ = s.read(samples_per_read)
             samples = samples.reshape(-1)
