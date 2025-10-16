@@ -1,154 +1,97 @@
-# AI 医疗语音助理系统（AI Medical Consultation Assistant）
+# AI 医疗问诊助手（AI Medical Assistant）
 
-基于 **Overhearing LLM Agent（旁听型智能体）** 理念的开源医疗语音辅助系统。  
-系统可监听医生与患者的问诊语音，对语音进行转写与语义摘要，  
-并由医生确认后生成正式病历或导出PDF报告。  
-在提高医生记录效率的同时，保证数据安全与合规。
-
----
-
-## 项目简介
-
-**项目目标：**  
-打造一个低成本、可本地运行的医疗语音辅助系统，  
-实现以下核心功能：
-- 医生问诊语音识别（FunASR）
-- AI 自动生成结构化摘要（Qwen2）
-- 医生确认与编辑（Human-in-the-loop）
-- 一键导出病历报告（PDF）
-- 医学知识检索问答（LangChain + Chroma）
-
-系统设计遵循 **隐私优先、医生主导** 原则，  
-不存储原始音频，仅保留脱敏文本结果，  
-符合《个人信息保护法（PIPL）》与医疗信息安全要求。
+本项目基于 **LangGraph + Sherpa-ONNX + Qwen + Jina Embedding + ChromaDB**，  
+实现了一个可在本地运行的 **智能语音问诊与报告生成系统**。  
+系统能在医生与患者问诊过程中进行实时语音识别、生成建议、并自动生成结构化病历报告。
 
 ---
 
-## 技术栈
+## 功能概览
 
-| 模块 | 使用技术 |
-|------|------------|
-| 后端 | FastAPI + Python 3.11.5 |
-| 前端 | Vue3 + TailwindCSS |
-| 语音识别 | FunASR |
-| 摘要生成 | Ollama + Mistral / Llama3 / Qwen2 |
-| 检索问答 | LangChain + ChromaDB |
-| 数据存储 | SQLite + postgreSQL + redis + ChromaDB |
-| 报告导出 | ReportLab / pdfkit |
-| 部署 | Docker + Render / Vercel |
+- **实时语音识别 (ASR)**  
+  使用 [Sherpa-ONNX](https://modelscope.cn/models/pengzhendong/sherpa-onnx-streaming-paraformer-bilingual-zh-en/files) 进行中英文双语流式识别。
+
+- **LangGraph 智能图**  
+  管理两个独立的智能 Agent：  
+  - **Realtime Agent**：针对实时对话生成简短医疗建议；  
+  - **Summary Agent**：问诊结束后生成完整病历报告。
+
+- **RAG 医学知识检索**  
+  通过 [Jina Embedding](https://huggingface.co/jinaai/jina-embeddings-v3) + ChromaDB 从医学知识库中检索相关内容辅助回答。
+
+- **Qwen 模型文本生成**  
+  使用 [Qwen3-1.7B](https://huggingface.co/Qwen/Qwen3-1.7B) 模型生成自然、结构化、符合医疗逻辑的报告文本。
 
 ---
 
-## 项目结构（计划中）
+## 项目结构
 
-``` bash
-ai-medical-assistant/
+```Bash
+backend/
+│── ASR/
+│ ├── Agent_ASR_Integration.py # 主入口：语音识别 + LangGraph 集成
+│ └── medical_graphs.py # LangGraph 双 Agent 定义
 │
-├── backend/
-│ ├── api/
-│ │ ├── audio.py            # 语音识别接口
-│ │ ├── summary.py          # 摘要生成接口
-│ │ ├── confirm.py          # 医生确认接口
-│ │ ├── chat.py             # 医学问答接口（RAG）
-│ │ ├── patient.py          # 病人数据管理
-│ │ └── report.py           # 报告导出接口
-│ ├── utils/
-│ │ ├── whisper_utils.py    # Whisper 转写
-│ │ ├── summarizer.py       # LLM 摘要逻辑
-│ │ ├── pdf_tools.py        # PDF 报告生成
-│ │ └── security.py         # 数据安全与脱敏
-│ ├── database/
-│ │ ├── __init__.py         # (空檔案)
-│ │ ├── crud.py             # (空檔案) - 未來放資料庫增刪改查邏輯
-│ │ ├── init_db.py          # (空檔案) - 未來放初始化資料庫的腳本
-│ │ ├── models.py           # (空檔案) - 未來放 SQLAlchemy 的 ORM 模型
-│ │ └── schemas.py
-│ ├── rag/
-│ │ ├── knowledge_base/
-│ │ ├── build_index.py
-│ │ └── retriever.py
-│ ├── main.py
-│ ├── .env                  # (空檔案) - 未來放設定和密碼
-│ ├── requirements.txt
-│ └── venv/
+│── nodes/
+│ ├── embedding_node.py # 向量化节点（Jina Embedding）
+│ ├── rag_query_node.py # RAG 检索节点（ChromaDB）
+│ └── llm_doctor_node.py # 大语言模型节点（Qwen3-1.7B）
 │
-├── frontend/
-│ ├── src/
-│ │ ├── components/
-│ │ └── pages/
-│ ├── package.json
-│ └── Dockerfile
+│── database/
+│ ├── models.py / session.py # 数据模型与数据库连接
 │
-├── docker-compose.yml
-└── README.md
+└── rag_store/ # 向量数据库（自动生成）
 ```
 
 ---
 
-## 本地运行指南
+## 环境配置
 
-1. 克隆项目：
+### 1. 创建虚拟环境
 ```bash
-   git clone git@github.com:nancyxieyy/ai-medical-assistant.git
-   cd ai-medical-assistant
+python -m venv venv
+source venv/bin/activate
 ```
 
-2. 启动后端：
-``` bash
-    cd backend
-    pip install -r requirements.txt
-    uvicorn main:app --reload
+### 2. 安装依赖
+```bash
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-3. 启动前端：
-``` bash
-    cd frontend
-    npm install
-    npm run dev
+### 3. 下载语音识别模型
+模型地址（从 ModelScope 下载）：
+`https://modelscope.cn/models/pengzhendong/sherpa-onnx-streaming-paraformer-bilingual-zh-en`
+
+解压后放到项目根目录下：
+`./sherpa-onnx-streaming-paraformer-bilingual-zh-en/`
+
+### 4. 运行项目
+```bash
+python -m backend.ASR.Agent_ASR_Integration
 ```
 
-4. 浏览器访问：
-http://localhost:3000
+运行后系统会：
+- 启动麦克风监听；
+- 识别语音内容；
+- 生成实时医疗建议；
+- 问诊结束后输出一份病历报告草稿（report_draft.txt）。
+
+
+## 模型说明
+| 模型类型 | 使用模型                                         | 说明                   |
+| -------- | ------------------------------------------------ | ---------------------- |
+| 语音识别 | sherpa-onnx-streaming-paraformer-bilingual-zh-en | 实时语音转文本         |
+| 向量模型 | jinaai/jina-embeddings-v3                        | 文本向量化用于检索     |
+| 医疗生成 | Qwen/Qwen3-1.7B                                  | 医疗建议与病历报告生成 |
+
+### 注意事项
+- 运行前请确保麦克风正常工作；
+- 模型较大，首次加载时间较长；
+- 本系统仅供研究与演示，不可作为正式医疗诊断工具。
 
 ---
 
-## 当前功能（MVP）
-- Whisper 语音转写模块
-- 本地 LLM 摘要生成（JSON结构）
-- 医生确认 / 编辑 / 忽略流程
-- PDF 报告导出
-- RAG 医学问答模块
-- Docker 一键部署
-- 数据与隐私设计
+## 作者
 
----
-
-## 不保存原始音频，仅保存转写文本；
-- 医生确认后才写入数据库；
-- 所有处理可本地化运行；
-- 遵循 人机共管（Human-in-the-loop） 设计原则。
-
----
-
-## 团队成员
-姓名	角色	主要职责
-谢越莹	技术负责人 / 全栈工程师	系统架构、模型集成、后端与部署
-苗嘉峻	产品负责人 / 前端与体验	产品设计、交互原型、前端开发与文档
-
----
-
-## 开源协议
-本项目基于 MIT License 开源。
-
----
-
-## 后续计划
-- 实时语音输入与流式摘要
-
-- 医疗影像或检验报告扩展模块
-
-- 病历智能搜索与分析
-
-- 多语言支持
-
-- 云端演示版本上线（Render + Vercel）
+[Mike Miao](https://github.com/mikey-miao)
+[Nancy Xie](https://github.com/nancyxieyy)
