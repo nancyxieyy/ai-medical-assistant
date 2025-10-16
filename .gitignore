@@ -236,3 +236,7 @@ __pycache__/
 .cache/
 rag_store/
 *.onnx
+sherpa-onnx-streaming-paraformer-bilingual-zh-en/
+sherpa-onnx-streaming-paraformer-bilingual-zh-en/
+.cache/
+__pycache__/
