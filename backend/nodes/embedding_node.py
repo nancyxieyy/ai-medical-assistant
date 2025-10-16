@@ -3,24 +3,24 @@
 import os
 from sentence_transformers import SentenceTransformer
 
+os.environ["HUGGINGFACE_HUB_CACHE"] = ".cache/hf"
+
 class JinaEmbeddingNode:
     """Embedding Node框架"""
     
+    # 全局缓存
+    _model = None
+    
     def __init__(self, model_name="jinaai/jina-embeddings-v3"):
         """初始化模型"""
-        # self.model = SentenceTransformer(model_name, trust_remote_code=True)
-        cache_dir = os.getenv("HUGGINGFACE_HUB_CACHE", os.path.expanduser("~/.cache/huggingface"))
-        os.makedirs(cache_dir, exist_ok=True)
+        cache_dir = ".cache/hf"
+        os.environ["HUGGINGFACE_HUB_CACHE"] = cache_dir
 
-        print(f"正在加载嵌入模型：{model_name}")
-        print(f"模型缓存目录：{cache_dir}")
-
-        self.model = SentenceTransformer(
-            model_name,
-            cache_folder=cache_dir,
-            trust_remote_code=True
-        )
-        print("JinaEmbeddingNode 模型加载完成。")
+        if JinaEmbeddingNode._model is None:
+            print(f"正在加载嵌入模型：{model_name}")
+            JinaEmbeddingNode._model = SentenceTransformer(model_name, trust_remote_code=True)
+            print("嵌入模型加载完成（仅首次）")
+        self.model = JinaEmbeddingNode._model
     
     def run(self, state):
         """

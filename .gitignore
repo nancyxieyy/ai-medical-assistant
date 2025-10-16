@@ -229,3 +229,10 @@ yarn-error.log*
 # =========================================
 data/
 rag_store/
+venv/
+__pycache__/
+.DS_Store
+*.pyc
+.cache/
+rag_store/
+*.onnx
